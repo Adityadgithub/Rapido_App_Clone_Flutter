@@ -1,11 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:rapidoo/covidpage.dart';
-import 'package:rapidoo/homepage.dart';
-import 'package:rapidoo/myrides.dart';
-import 'package:rapidoo/payment.dart';
-import 'package:rapidoo/setting.dart';
+import 'package:rapidoo/Pages/InviteFriends.dart';
+import 'package:rapidoo/Pages/Notifications.dart';
+import 'package:rapidoo/Pages/covidpage.dart';
+import 'package:rapidoo/Pages/homepage.dart';
+import 'package:rapidoo/Pages/myrides.dart';
+import 'package:rapidoo/Pages/payment.dart';
+import 'package:rapidoo/Pages/powerpass.dart';
+import 'package:rapidoo/Pages/myrides.dart';
+import 'package:rapidoo/Pages/settings/profile.dart';
+
+import 'Pages/Insurance.dart';
+import 'Pages/Support.dart';
+import 'Pages/setting.dart';
+
 
 void main() {
   if (defaultTargetPlatform == TargetPlatform.windows) {
@@ -28,6 +37,13 @@ class MyApp extends StatelessWidget {
         "PaymentPage": (context) => Payment(),
         "MyRides": (context) => MyridesPage(),
         "Settings": (context) => Settings(),
+        "Invitefrnds": (context) => Invitefrnds(),
+        "Support": (context) => Support(),
+        "Notifications": (context) => Notifications(),
+        "PowerPass": (context) => PowerPass(),
+        "Insurance": (context) => Insurance(),
+        "Login":(context) => Rapioapp(),
+        "Profile":(context) => Profile(),
       },
       debugShowCheckedModeBanner: false,
       home: MapSample(),

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:rapidoo/.env.dart';
+import 'package:rapidoo/googlemap/.env.dart';
+
 import 'directions_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 

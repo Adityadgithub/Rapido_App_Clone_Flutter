@@ -36,7 +36,9 @@ class _SettingsState extends State<Settings> {
             child: Column(
               children: [
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, "Profile");
+                    },
                     child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -257,7 +259,9 @@ class _SettingsState extends State<Settings> {
                           ],
                         ))),
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, "Login");
+                    },
                     child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(

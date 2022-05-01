@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:rapidoo/directions_model.dart';
-import 'package:rapidoo/directions_repository.dart';
+import 'package:rapidoo/Pages/Drawer.dart';
+import 'package:rapidoo/googlemap/.env.dart';
+import 'package:rapidoo/googlemap/directions_model.dart';
+import 'package:rapidoo/googlemap/directions_repository.dart';
+import 'package:google_geocoding/google_geocoding.dart';
 import 'package:rapidoo/main.dart';
 
 void main() {
@@ -39,248 +42,13 @@ class MapSampleState extends State<MapSample> {
 
   var dd;
 
+  GeocodingResponse? address ;
+
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: Drawer(
-          child: SafeArea(
-        child: Padding(
-            padding: const EdgeInsets.only(top: 13.0, left: 10),
-            child: Column(
-              children: [
-                Container(
-                  child: Row(children: [
-                    CircleAvatar(
-                      minRadius: 20,
-                      child: Icon(
-                        Icons.person,
-                        size: 30,
-                      ),
-                      backgroundColor: Colors.grey,
-                    ),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "User Name",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Text(
-                          "+91 9876543210",
-                          style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ]),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                  onPressed: () {
-                    if (homepageenable == false) {
-                      Navigator.pushNamed(context, "HomePage");
-                      homepageenable = true;
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.home),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("Home",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          )),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                  onPressed: () {
-                    homepageenable = false;
-                    Navigator.pushNamed(context, "CovidPage");
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.medication),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("COVID 19",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ))
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, "PaymentPage");
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.payments_outlined),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("Payments",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ))
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, "MyRides");
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.time_to_leave),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("My Rides",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ))
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Row(
-                    children: [
-                      Icon(Icons.card_giftcard_outlined),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("Invite Friends",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ))
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Row(
-                    children: [
-                      Icon(Icons.credit_card),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("Power Pass",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ))
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                    onPressed: () {},
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.notifications,
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text("Notification",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ))
-                      ],
-                    )),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Row(
-                    children: [
-                      Icon(Icons.shield),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("Insurance",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ))
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, "Settings");
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.settings),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("Settings",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ))
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Row(
-                    children: [
-                      Icon(Icons.support),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("Support",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ))
-                    ],
-                  ),
-                ),
-              ],
-            )),
-      )),
+      drawer: DrawerWidget(),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 225, 203, 1),
         actions: [
@@ -379,10 +147,7 @@ class MapSampleState extends State<MapSample> {
                     ),
                   ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: 250,
-                    left: 430,
-                  ),
+                  padding: const EdgeInsets.only(right: 15.0),
                   child: Container(
                     height: 40,
                     width: 40,
@@ -420,9 +185,9 @@ class MapSampleState extends State<MapSample> {
                         width: 10,
                       ),
                       Text(
-                        "06/157, Phase 1, IDA Jeedimetla,",
+                        "${address}csfd",
                         style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
+                            fontSize: 10, fontWeight: FontWeight.bold),
                       )
                     ],
                   ))),
@@ -487,7 +252,7 @@ class MapSampleState extends State<MapSample> {
 
   void AddMaker(LatLng pos) async {
     if (_origin == null || (_origin != null && _destination != null)) {
-      setState(() {
+      setState(() async {
         _origin = Marker(
             markerId: MarkerId("origin"),
             infoWindow: InfoWindow(title: "Origin"),
@@ -496,6 +261,8 @@ class MapSampleState extends State<MapSample> {
             position: pos);
         _destination = null;
         _info = null;
+        var googleGeocoding = GoogleGeocoding("${googleAPIKey}");
+ address = await googleGeocoding.geocoding.getReverse(LatLon(40.714224,-73.961452));
       });
     } else {
       {
