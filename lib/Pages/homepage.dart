@@ -42,8 +42,7 @@ class MapSampleState extends State<MapSample> {
 
   var dd;
 
-  GeocodingResponse? address ;
-
+  var address;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +184,7 @@ class MapSampleState extends State<MapSample> {
                         width: 10,
                       ),
                       Text(
-                        "${address}csfd",
+                        "${address}",
                         style: TextStyle(
                             fontSize: 10, fontWeight: FontWeight.bold),
                       )
@@ -252,7 +251,7 @@ class MapSampleState extends State<MapSample> {
 
   void AddMaker(LatLng pos) async {
     if (_origin == null || (_origin != null && _destination != null)) {
-      setState(() async {
+      setState(() {
         _origin = Marker(
             markerId: MarkerId("origin"),
             infoWindow: InfoWindow(title: "Origin"),
@@ -261,8 +260,6 @@ class MapSampleState extends State<MapSample> {
             position: pos);
         _destination = null;
         _info = null;
-        var googleGeocoding = GoogleGeocoding("${googleAPIKey}");
- address = await googleGeocoding.geocoding.getReverse(LatLon(40.714224,-73.961452));
       });
     } else {
       {
@@ -277,8 +274,10 @@ class MapSampleState extends State<MapSample> {
       }
     }
 
-    final directions = await DirectionsRepository(dio: dd)
-        .getDirections(origin: _origin!.position, destination: pos);
+    var googleGeocoding = GoogleGeocoding("Your-Key");
+    address = await googleGeocoding.geocoding
+        .getReverse(LatLon(19.075983, 72.877655));
+
     setState(() {});
   }
 }
