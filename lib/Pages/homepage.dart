@@ -9,6 +9,9 @@ import 'package:rapidoo/googlemap/directions_model.dart';
 import 'package:rapidoo/googlemap/directions_repository.dart';
 import 'package:google_geocoding/google_geocoding.dart';
 import 'package:rapidoo/main.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart' as l;
 
 void main() {
   runApp(MapSample());
@@ -24,9 +27,11 @@ class MapSample extends StatefulWidget {
 
 class MapSampleState extends State<MapSample> {
   Completer<GoogleMapController> _controller = Completer();
+  Position? position;
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+  late final CameraPosition? kGooglePlex = CameraPosition(
+    target: LatLng(position?.latitude ?? 37.42796133580664,
+        position?.longitude ?? -122.085749655962),
     zoom: 14.4746,
   );
 
@@ -40,9 +45,29 @@ class MapSampleState extends State<MapSample> {
   Marker? _destination;
   Directions? _info;
 
-  var dd;
+  var startaddress;
+  var startadresssolved;
+  var startplaceMark;
+  var startplacename;
+  var startsubLocality;
+  var startlocality;
+  var startadministrativeArea;
+  var startpostalCode;
+  var startcountry;
+  var startplaceaddress;
 
-  var address;
+  var endaddress;
+  var endadresssolved;
+  var endplaceMark;
+  var endplacename;
+  var endsubLocality;
+  var endlocality;
+  var endadministrativeArea;
+  var endpostalCode;
+  var endcountry;
+  var endplaceaddress;
+
+  bool located = false;
 
   @override
   Widget build(BuildContext context) {
@@ -98,10 +123,10 @@ class MapSampleState extends State<MapSample> {
         children: [
           Container(
             color: Colors.red,
-            height: MediaQuery.of(context).size.height - 320,
+            height: MediaQuery.of(context).size.shortestSide,
             width: MediaQuery.of(context).size.width,
             child: Stack(
-              alignment: Alignment.center,
+              alignment: Alignment.topRight,
               children: [
                 GoogleMap(
                   markers: {
@@ -111,7 +136,7 @@ class MapSampleState extends State<MapSample> {
                   onLongPress: AddMaker,
                   zoomControlsEnabled: false,
                   mapType: MapType.hybrid,
-                  initialCameraPosition: _kGooglePlex,
+                  initialCameraPosition: kGooglePlex!,
                   onMapCreated: (GoogleMapController controller) {
                     _controller.complete(controller);
                   },
@@ -146,13 +171,13 @@ class MapSampleState extends State<MapSample> {
                     ),
                   ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 15.0),
+                  padding: const EdgeInsets.only(top: 20.0, right: 15),
                   child: Container(
                     height: 40,
                     width: 40,
                     color: Colors.white.withOpacity(0.75),
                     child: IconButton(
-                      onPressed: _goToOriginalP,
+                      onPressed: getLocation,
                       icon: Icon(
                         Icons.my_location,
                         color: Colors.black,
@@ -163,104 +188,166 @@ class MapSampleState extends State<MapSample> {
               ],
             ),
           ),
-          Container(
-              height: 70,
-              width: MediaQuery.of(context).size.width - 20,
-              child: Card(
-                  elevation: 2.5,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Icon(
-                        Icons.circle,
-                        color: Color.fromARGB(255, 7, 80, 9),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "${address}",
-                        style: TextStyle(
-                            fontSize: 10, fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ))),
-          Container(
-              height: 70,
-              width: MediaQuery.of(context).size.width - 20,
-              child: Card(
-                  elevation: 2.4,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Icon(
-                        Icons.circle,
-                        color: Colors.red,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "356, Old Post Office Rd, LB Nagar",
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ))),
-          TextButton(
-            style: TextButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 26, 26, 26)),
-            onPressed: () {},
-            child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: Column(children: [
-                  SizedBox(
-                    height: 3,
-                  ),
-                  Icon(Icons.directions_bike, color: Colors.yellow),
-                  Text(
-                    "Ride",
-                    style: TextStyle(color: Colors.yellow),
-                  )
-                ])),
-          ),
+          if (located == true)
+            Container(
+                height: 90,
+                width: MediaQuery.of(context).size.width - 20,
+                child: Card(
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: Colors.black,
+                          width: 1,
+                          style: BorderStyle.solid,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    color: Colors.white,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Icon(
+                          Icons.circle,
+                          color: Color.fromARGB(255, 7, 80, 9),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "${startplaceaddress}",
+                          style: TextStyle(
+                              fontSize: 10, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ))),
+          if (located == true)
+            Container(
+                height: 90,
+                width: MediaQuery.of(context).size.width - 20,
+                child: Card(
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: Colors.black,
+                          width: 1,
+                          style: BorderStyle.solid,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    color: Colors.white,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Icon(
+                          Icons.circle,
+                          color: Colors.red,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "${endplaceaddress}",
+                          style: TextStyle(
+                              fontSize: 10, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ))),
+          if (located == true)
+            TextButton(
+              style: TextButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 26, 26, 26)),
+              onPressed: () {},
+              child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(children: [
+                    SizedBox(
+                      height: 3,
+                    ),
+                    Icon(Icons.directions_bike, color: Colors.yellow),
+                    Text(
+                      "Ride",
+                      style: TextStyle(color: Colors.yellow),
+                    )
+                  ])),
+            ),
+          if (located == false)
+            Padding(
+              padding: const EdgeInsets.only(
+                bottom: 130.0,
+              ),
+              child: Text(
+                "Choose Your Start Location from the Map to Get Started!",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, fontSize: 20),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
-
   Future<void> _goToOriginalP() async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
+    controller.animateCamera(CameraUpdate.newCameraPosition(kGooglePlex!));
+  }
+
+  void getLocation() async {
+    final GoogleMapController controller = await _controller.future;
+    l.Location currentLocation = l.Location();
+    Set<Marker> _marker = {};
+    var location = await currentLocation.getLocation();
+    currentLocation.onLocationChanged.listen((l.LocationData loc) {
+      controller
+          ?.animateCamera(CameraUpdate.newCameraPosition(new CameraPosition(
+        target: LatLng(loc.latitude ?? 0.0, loc.longitude ?? 0.0),
+        zoom: 12.0,
+      )));
+      print(loc.latitude);
+      print(loc.longitude);
+      setState(() {
+        _marker.add(Marker(
+          markerId: MarkerId("Home"),
+          position: LatLng(loc.latitude ?? 0.0, loc.longitude ?? 0.0),
+          visible: true,
+          icon: BitmapDescriptor.defaultMarker,
+        ));
+      });
+    });
+
+    void initState() {
+      super.initState();
+      setState(() {
+        getLocation();
+      });
+    }
   }
 
   void AddMaker(LatLng pos) async {
+    located = true;
     if (_origin == null || (_origin != null && _destination != null)) {
-      setState(() {
-        _origin = Marker(
-            markerId: MarkerId("origin"),
-            infoWindow: InfoWindow(title: "Origin"),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueGreen),
-            position: pos);
-        _destination = null;
-        _info = null;
-      });
+      setState(() {});
+      _origin = Marker(
+          markerId: MarkerId("origin"),
+          infoWindow: InfoWindow(title: "Origin"),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          position: pos);
+      _destination = null;
+      _info = null;
+
+      startaddress = await placemarkFromCoordinates(
+        _origin!.position.latitude,
+        _origin!.position.longitude,
+      );
+      startplaceMark = startaddress[0];
+      startplacename = startplaceMark.name;
+      startsubLocality = startplaceMark.subLocality;
+      startlocality = startplaceMark.locality;
+      startadministrativeArea = startplaceMark.administrativeArea;
+      startpostalCode = startplaceMark.postalCode;
+      startcountry = startplaceMark.country;
+      startplaceaddress =
+          "${startplacename} ${startsubLocality}, ${startlocality}, ${startadministrativeArea} ${startpostalCode}, ${startcountry}";
     } else {
       {
         setState(() {
@@ -271,12 +358,22 @@ class MapSampleState extends State<MapSample> {
                   BitmapDescriptor.hueBlue),
               position: pos);
         });
+
+        endaddress = await placemarkFromCoordinates(
+          _origin!.position.latitude,
+          _origin!.position.longitude,
+        );
+        endplaceMark = endaddress[0];
+        endplacename = endplaceMark.name;
+        endsubLocality = endplaceMark.subLocality;
+        endlocality = endplaceMark.locality;
+        endadministrativeArea = endplaceMark.administrativeArea;
+        endpostalCode = endplaceMark.postalCode;
+        endcountry = endplaceMark.country;
+        endplaceaddress =
+            "${endplacename} ${endsubLocality}, ${endlocality}, ${endadministrativeArea} ${endpostalCode}, ${endcountry}";
       }
     }
-
-    var googleGeocoding = GoogleGeocoding("Your-Key");
-    address = await googleGeocoding.geocoding
-        .getReverse(LatLon(19.075983, 72.877655));
 
     setState(() {});
   }
