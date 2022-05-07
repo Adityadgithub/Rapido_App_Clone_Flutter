@@ -256,7 +256,8 @@ class MapSampleState extends State<MapSample> {
             TextButton(
               style: TextButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 26, 26, 26)),
-              onPressed: () {},
+              onPressed: () {
+              },
               child: Container(
                   width: MediaQuery.of(context).size.width,
                   child: Column(children: [
@@ -349,7 +350,7 @@ class MapSampleState extends State<MapSample> {
       startplaceaddress =
           "${startplacename} ${startsubLocality}, ${startlocality}, ${startadministrativeArea} ${startpostalCode}, ${startcountry}";
     } else {
-      {
+
         setState(() {
           _destination = Marker(
               markerId: MarkerId("destination"),
@@ -360,8 +361,8 @@ class MapSampleState extends State<MapSample> {
         });
 
         endaddress = await placemarkFromCoordinates(
-          _origin!.position.latitude,
-          _origin!.position.longitude,
+          _destination!.position.latitude,
+          _destination!.position.longitude,
         );
         endplaceMark = endaddress[0];
         endplacename = endplaceMark.name;
@@ -373,8 +374,7 @@ class MapSampleState extends State<MapSample> {
         endplaceaddress =
             "${endplacename} ${endsubLocality}, ${endlocality}, ${endadministrativeArea} ${endpostalCode}, ${endcountry}";
       }
-    }
 
-    setState(() {});
+
   }
 }
